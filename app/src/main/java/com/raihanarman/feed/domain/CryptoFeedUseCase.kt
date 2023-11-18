@@ -1,4 +1,4 @@
-package com.raihanarman.feed
+package com.raihanarman.feed.domain
 
 import kotlinx.coroutines.flow.Flow
 import java.lang.Exception

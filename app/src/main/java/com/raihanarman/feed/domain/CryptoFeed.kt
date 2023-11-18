@@ -1,4 +1,4 @@
-package com.raihanarman.feed
+package com.raihanarman.feed.domain
 
 /**
  * @author Raihan Arman

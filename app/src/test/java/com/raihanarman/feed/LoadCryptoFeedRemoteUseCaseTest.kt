@@ -4,6 +4,8 @@ import app.cash.turbine.test
 import com.raihanarman.feed.api.Connectivity
 import com.raihanarman.feed.api.ConnectivityException
 import com.raihanarman.feed.api.HttpClient
+import com.raihanarman.feed.api.InvalidData
+import com.raihanarman.feed.api.InvalidDataException
 import com.raihanarman.feed.api.LoadCryptoFeedRemoteUseCase
 import io.mockk.MockKAnnotations
 import io.mockk.confirmVerified
@@ -99,6 +101,25 @@ class LoadCryptoFeedRemoteUseCaseTest {
 
         sut.load().test {
             assertEquals(Connectivity::class.java, awaitItem()::class.java)
+            awaitComplete()
+        }
+
+        verify(exactly = 1) {
+            client.get()
+        }
+
+        confirmVerified(client)
+
+    }
+
+    @Test
+    fun testDeliversInvalidDataError() = runBlocking {
+        every {
+            client.get()
+        } returns flowOf(InvalidDataException())
+
+        sut.load().test {
+            assertEquals(InvalidData::class.java, awaitItem()::class.java)
             awaitComplete()
         }
 

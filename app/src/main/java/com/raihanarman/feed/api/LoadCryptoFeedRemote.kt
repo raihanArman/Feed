@@ -23,3 +23,4 @@ interface HttpClient {
 }
 
 class Connectivity: Exception()
+class ConnectivityException: Exception()

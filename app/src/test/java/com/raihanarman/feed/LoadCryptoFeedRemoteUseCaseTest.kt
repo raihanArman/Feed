@@ -1,6 +1,8 @@
 package com.raihanarman.feed
 
 import app.cash.turbine.test
+import com.raihanarman.feed.api.BadRequest
+import com.raihanarman.feed.api.BadRequestException
 import com.raihanarman.feed.api.Connectivity
 import com.raihanarman.feed.api.ConnectivityException
 import com.raihanarman.feed.api.HttpClient
@@ -120,6 +122,25 @@ class LoadCryptoFeedRemoteUseCaseTest {
 
         sut.load().test {
             assertEquals(InvalidData::class.java, awaitItem()::class.java)
+            awaitComplete()
+        }
+
+        verify(exactly = 1) {
+            client.get()
+        }
+
+        confirmVerified(client)
+
+    }
+
+    @Test
+    fun testDeliversBadRequestError() = runBlocking {
+        every {
+            client.get()
+        } returns flowOf(BadRequestException())
+
+        sut.load().test {
+            assertEquals(BadRequest::class.java, awaitItem()::class.java)
             awaitComplete()
         }
 

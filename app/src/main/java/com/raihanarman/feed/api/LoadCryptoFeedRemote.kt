@@ -20,9 +20,17 @@ class LoadCryptoFeedRemoteUseCase(
                 is InvalidDataException -> {
                     emit(InvalidData())
                 }
+                is BadRequestException -> {
+                    emit(BadRequest())
+                }
             }
         }
     }
+}
+
+sealed class HttpClientResult {
+    object Success: HttpClientResult()
+    object Failure: HttpClientResult()
 }
 
 interface HttpClient {
@@ -32,4 +40,8 @@ interface HttpClient {
 class Connectivity: Exception()
 class ConnectivityException: Exception()
 class InvalidDataException: Exception()
+
+class BadRequestException: Exception()
 class InvalidData: Exception()
+
+class BadRequest: Exception()

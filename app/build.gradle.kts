@@ -63,6 +63,10 @@ dependencies {
     implementation(libs.kotlinx.coroutines.android)
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)
+
+    testImplementation("io.mockk:mockk:1.12.0")
+    testImplementation("app.cash.turbine:turbine:0.12.1")
+
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.espresso.core)
     androidTestImplementation(platform(libs.compose.bom))

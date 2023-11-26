@@ -23,6 +23,9 @@ class LoadCryptoFeedRemoteUseCase(
                 is BadRequestException -> {
                     emit(BadRequest())
                 }
+                is ServerErrorException -> {
+                    emit(ServerError())
+                }
             }
         }
     }
@@ -42,6 +45,10 @@ class ConnectivityException: Exception()
 class InvalidDataException: Exception()
 
 class BadRequestException: Exception()
+
+class ServerErrorException: Exception()
 class InvalidData: Exception()
 
 class BadRequest: Exception()
+
+class ServerError: Exception()

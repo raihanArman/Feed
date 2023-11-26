@@ -9,6 +9,8 @@ import com.raihanarman.feed.api.HttpClient
 import com.raihanarman.feed.api.InvalidData
 import com.raihanarman.feed.api.InvalidDataException
 import com.raihanarman.feed.api.LoadCryptoFeedRemoteUseCase
+import com.raihanarman.feed.api.ServerError
+import com.raihanarman.feed.api.ServerErrorException
 import io.mockk.MockKAnnotations
 import io.mockk.confirmVerified
 import io.mockk.every
@@ -149,6 +151,23 @@ class LoadCryptoFeedRemoteUseCaseTest {
         }
 
         confirmVerified(client)
+    }
 
+    @Test
+    fun testDeliversServerError() = runBlocking {
+        every {
+            client.get()
+        } returns flowOf(ServerErrorException())
+
+        sut.load().test {
+            assertEquals(ServerError::class.java, awaitItem()::class.java)
+            awaitComplete()
+        }
+
+        verify(exactly = 1) {
+            client.get()
+        }
+
+        confirmVerified(client)
     }
 }

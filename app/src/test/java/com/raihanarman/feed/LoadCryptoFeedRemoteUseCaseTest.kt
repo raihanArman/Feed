@@ -10,6 +10,8 @@ import com.raihanarman.feed.api.HttpClientResult
 import com.raihanarman.feed.api.InvalidData
 import com.raihanarman.feed.api.InvalidDataException
 import com.raihanarman.feed.api.LoadCryptoFeedRemoteUseCase
+import com.raihanarman.feed.api.NotFound
+import com.raihanarman.feed.api.NotFoundException
 import com.raihanarman.feed.api.RemoteCoinInfo
 import com.raihanarman.feed.api.RemoteCryptoFeedItem
 import com.raihanarman.feed.api.RemoteDisplay
@@ -152,6 +154,18 @@ class LoadCryptoFeedRemoteUseCaseTest {
             sut = sut,
             receivedHttpClientResult = HttpClientResult.Failure(ServerErrorException()),
             expectedResult = ServerError(),
+            exactly = 1,
+            confirmVerified = client
+        )
+    }
+
+    @Test
+    fun testLoadDeliversNotFoundErrorOnClientError() {
+        expect(
+            client = client,
+            sut = sut,
+            receivedHttpClientResult = HttpClientResult.Failure(NotFoundException()),
+            expectedResult = NotFound(),
             exactly = 1,
             confirmVerified = client
         )

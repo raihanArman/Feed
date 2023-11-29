@@ -65,6 +65,7 @@ dependencies {
     implementation("com.squareup.retrofit2:retrofit:2.7.2")
     implementation("com.squareup.retrofit2:converter-gson:2.7.2")
     implementation("com.squareup.okhttp3:okhttp:3.6.0")
+    implementation("com.squareup.moshi:moshi:1.14.0")
 
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)

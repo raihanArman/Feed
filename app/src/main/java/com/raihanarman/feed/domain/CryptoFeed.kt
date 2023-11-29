@@ -1,5 +1,7 @@
 package com.raihanarman.feed.domain
 
+import kotlinx.coroutines.flow.Flow
+
 /**
  * @author Raihan Arman
  * @date 18/11/23
@@ -15,11 +17,12 @@ data class Raw(
 
 data class Usd(
     val price: Double,
-    val changePctDay: Long
+    val changePctDay: Float
 )
 
 data class CoinInfo(
     val id: String,
     val name: String,
-    val fullName: String
+    val fullName: String,
+    val imageUrl: String
 )

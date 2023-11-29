@@ -16,6 +16,7 @@ import java.lang.Exception
 
 sealed class LoadCryptoFeedResult {
     data class Failure(val exception: Exception): LoadCryptoFeedResult()
+    data class Success(val cryptoFeedItems: List<CryptoFeed>): LoadCryptoFeedResult()
 }
 
 interface LoadCryptoFeedUseCase {

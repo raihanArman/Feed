@@ -10,9 +10,18 @@ import com.raihanarman.feed.api.HttpClientResult
 import com.raihanarman.feed.api.InvalidData
 import com.raihanarman.feed.api.InvalidDataException
 import com.raihanarman.feed.api.LoadCryptoFeedRemoteUseCase
+import com.raihanarman.feed.api.RemoteCoinInfo
+import com.raihanarman.feed.api.RemoteCryptoFeedItem
+import com.raihanarman.feed.api.RemoteDisplay
+import com.raihanarman.feed.api.RemoteRootCryptoFeed
+import com.raihanarman.feed.api.RemoteUsd
 import com.raihanarman.feed.api.ServerError
 import com.raihanarman.feed.api.ServerErrorException
+import com.raihanarman.feed.domain.CoinInfo
+import com.raihanarman.feed.domain.CryptoFeed
 import com.raihanarman.feed.domain.LoadCryptoFeedResult
+import com.raihanarman.feed.domain.Raw
+import com.raihanarman.feed.domain.Usd
 import io.mockk.MockKAnnotations
 import io.mockk.confirmVerified
 import io.mockk.every
@@ -148,6 +157,80 @@ class LoadCryptoFeedRemoteUseCaseTest {
         )
     }
 
+    @Test
+    fun testDeliversItemsOn200HttpResponseWithResponse() = runBlocking {
+        val cryptoFeedResponse = listOf(
+            RemoteCryptoFeedItem(
+                RemoteCoinInfo(
+                    "1",
+                    "BTC",
+                    "Bitcoin",
+                    "imageUrl",
+                ),
+                RemoteDisplay(
+                    RemoteUsd(
+                        1.0,
+                        1F,
+                    ),
+                ),
+            ),
+            RemoteCryptoFeedItem(
+                RemoteCoinInfo(
+                    "2",
+                    "BTC 2",
+                    "Bitcoin 2",
+                    "imageUrl"
+                ),
+                RemoteDisplay(
+                    RemoteUsd(
+                        2.0,
+                        2F,
+                    ),
+                ),
+            ),
+        )
+        val cryptoFeed = listOf(
+            CryptoFeed(
+                CoinInfo(
+                    "1",
+                    "BTC",
+                    "Bitcoin",
+                    "imageUrl"
+                ),
+                Raw(
+                    Usd(
+                        1.0,
+                        1F,
+                    ),
+                ),
+            ),
+            CryptoFeed(
+                CoinInfo(
+                    "2",
+                    "BTC 2",
+                    "Bitcoin 2",
+                    "imageUrl"
+                ),
+                Raw(
+                    Usd(
+                        2.0,
+                        2F,
+                    ),
+                ),
+            ),
+        )
+        expect(
+            client = client,
+            sut = sut,
+            receivedHttpClientResult = HttpClientResult.Success(RemoteRootCryptoFeed(
+                data = cryptoFeedResponse
+            )),
+            expectedResult = LoadCryptoFeedResult.Success(cryptoFeed),
+            exactly = 1,
+            confirmVerified = client
+        )
+    }
+
     private fun expect(
         client: HttpClient,
         sut: LoadCryptoFeedRemoteUseCase,
@@ -164,6 +247,13 @@ class LoadCryptoFeedRemoteUseCaseTest {
             when(val receivedResult = awaitItem()) {
                 is LoadCryptoFeedResult.Failure -> {
                     assertEquals(expectedResult::class.java, receivedResult.exception::class.java)
+                }
+
+                is LoadCryptoFeedResult.Success -> {
+                    assertEquals(
+                        expectedResult,
+                        receivedResult
+                    )
                 }
             }
             awaitComplete()

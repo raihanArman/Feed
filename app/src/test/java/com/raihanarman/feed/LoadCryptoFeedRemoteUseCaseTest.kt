@@ -162,14 +162,14 @@ class LoadCryptoFeedRemoteUseCaseTest {
     private fun expect(
         client: HttpClient,
         sut: LoadCryptoFeedRemoteUseCase,
-        toCompleteWith: Exception,
+        receivedHttpClientResult: Exception,
         expectedResult: Any,
         exactly: Int = -1,
         confirmVerified: HttpClient
     ) = runBlocking {
         every {
             client.get()
-        } returns flowOf(toCompleteWith)
+        } returns flowOf(receivedHttpClientResult)
 
         sut.load().test {
             assertEquals(expectedResult::class.java, awaitItem()::class.java)

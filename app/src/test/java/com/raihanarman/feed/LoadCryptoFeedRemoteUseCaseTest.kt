@@ -137,37 +137,50 @@ class LoadCryptoFeedRemoteUseCaseTest {
 
     @Test
     fun testDeliversBadRequestError() = runBlocking {
-        every {
-            client.get()
-        } returns flowOf(BadRequestException())
-
-        sut.load().test {
-            assertEquals(BadRequest::class.java, awaitItem()::class.java)
-            awaitComplete()
-        }
-
-        verify(exactly = 1) {
-            client.get()
-        }
-
-        confirmVerified(client)
+        expect(
+            client = client,
+            sut = sut,
+            toCompleteWith = BadRequestException(),
+            expectedResult = BadRequest(),
+            exactly = 1,
+            confirmVerified = client
+        )
     }
 
     @Test
     fun testDeliversServerError() = runBlocking {
+        expect(
+            client = client,
+            sut = sut,
+            toCompleteWith = ServerErrorException(),
+            expectedResult = ServerError(),
+            exactly = 1,
+            confirmVerified = client
+        )
+    }
+
+    private fun expect(
+        client: HttpClient,
+        sut: LoadCryptoFeedRemoteUseCase,
+        toCompleteWith: Exception,
+        expectedResult: Any,
+        exactly: Int = -1,
+        confirmVerified: HttpClient
+    ) = runBlocking {
         every {
             client.get()
-        } returns flowOf(ServerErrorException())
+        } returns flowOf(toCompleteWith)
 
         sut.load().test {
-            assertEquals(ServerError::class.java, awaitItem()::class.java)
+            assertEquals(expectedResult::class.java, awaitItem()::class.java)
             awaitComplete()
         }
 
-        verify(exactly = 1) {
+        verify(exactly = exactly) {
             client.get()
         }
 
-        confirmVerified(client)
+        confirmVerified(confirmVerified)
     }
+
 }

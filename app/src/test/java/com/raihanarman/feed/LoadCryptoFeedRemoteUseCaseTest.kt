@@ -140,7 +140,7 @@ class LoadCryptoFeedRemoteUseCaseTest {
         expect(
             client = client,
             sut = sut,
-            toCompleteWith = BadRequestException(),
+            receivedHttpClientResult = BadRequestException(),
             expectedResult = BadRequest(),
             exactly = 1,
             confirmVerified = client
@@ -152,7 +152,7 @@ class LoadCryptoFeedRemoteUseCaseTest {
         expect(
             client = client,
             sut = sut,
-            toCompleteWith = ServerErrorException(),
+            receivedHttpClientResult = ServerErrorException(),
             expectedResult = ServerError(),
             exactly = 1,
             confirmVerified = client

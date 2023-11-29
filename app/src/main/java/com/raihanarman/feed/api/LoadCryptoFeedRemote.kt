@@ -1,5 +1,6 @@
 package com.raihanarman.feed.api
 
+import com.raihanarman.feed.domain.LoadCryptoFeedResult
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
@@ -11,20 +12,24 @@ import kotlinx.coroutines.flow.flow
 class LoadCryptoFeedRemoteUseCase(
     private val httpClient: HttpClient
 ) {
-    fun load(): Flow<Exception> = flow {
-        httpClient.get().collect { error ->
-            when(error) {
-                is ConnectivityException -> {
-                    emit(Connectivity())
-                }
-                is InvalidDataException -> {
-                    emit(InvalidData())
-                }
-                is BadRequestException -> {
-                    emit(BadRequest())
-                }
-                is ServerErrorException -> {
-                    emit(ServerError())
+    fun load(): Flow<LoadCryptoFeedResult> = flow {
+        httpClient.get().collect { result  ->
+            when(result) {
+                is HttpClientResult.Failure -> {
+                    when(result.exception) {
+                        is ConnectivityException -> {
+                            emit(LoadCryptoFeedResult.Failure(Connectivity()))
+                        }
+                        is InvalidDataException -> {
+                            emit(LoadCryptoFeedResult.Failure(InvalidData()))
+                        }
+                        is BadRequestException -> {
+                            emit(LoadCryptoFeedResult.Failure(BadRequest()))
+                        }
+                        is ServerErrorException -> {
+                            emit(LoadCryptoFeedResult.Failure(ServerError()))
+                        }
+                    }
                 }
             }
         }
@@ -32,12 +37,11 @@ class LoadCryptoFeedRemoteUseCase(
 }
 
 sealed class HttpClientResult {
-    object Success: HttpClientResult()
-    object Failure: HttpClientResult()
+    data class Failure(val exception: Exception): HttpClientResult()
 }
 
 interface HttpClient {
-    fun get(): Flow<Exception>
+    fun get(): Flow<HttpClientResult>
 }
 
 class Connectivity: Exception()

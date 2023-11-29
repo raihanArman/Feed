@@ -36,6 +36,9 @@ class LoadCryptoFeedRemoteUseCase(
                         is ServerErrorException -> {
                             emit(LoadCryptoFeedResult.Failure(ServerError()))
                         }
+                        is NotFoundException -> {
+                            emit(LoadCryptoFeedResult.Failure(NotFound()))
+                        }
                     }
                 }
             }
@@ -79,8 +82,13 @@ class InvalidDataException: Exception()
 class BadRequestException: Exception()
 
 class ServerErrorException: Exception()
+
+class NotFoundException: Exception()
+
 class InvalidData: Exception()
 
 class BadRequest: Exception()
 
 class ServerError: Exception()
+
+class NotFound: Exception()

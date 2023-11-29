@@ -245,6 +245,22 @@ class LoadCryptoFeedRemoteUseCaseTest {
         )
     }
 
+    @Test
+    fun testDeliversNoItemsOn200HttpResponseWithResponse() {
+        val cryptoFeedResponse = listOf<RemoteCryptoFeedItem>()
+        val cryptoFeed = listOf<CryptoFeed>()
+        expect(
+            client = client,
+            sut = sut,
+            receivedHttpClientResult = HttpClientResult.Success(RemoteRootCryptoFeed(
+                data = cryptoFeedResponse
+            )),
+            expectedResult = LoadCryptoFeedResult.Success(cryptoFeed),
+            exactly = 1,
+            confirmVerified = client
+        )
+    }
+
     private fun expect(
         client: HttpClient,
         sut: LoadCryptoFeedRemoteUseCase,

@@ -2,11 +2,14 @@ package com.raihanarman.feed
 
 import app.cash.turbine.test
 import com.raihanarman.feed.api.ConnectivityException
+import com.raihanarman.feed.api.CryptoFeedRetrofitHttpClient
+import com.raihanarman.feed.api.CryptoFeedService
 import com.raihanarman.feed.api.HttpClientResult
 import com.raihanarman.feed.api.RemoteCryptoFeedItem
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
+import io.mockk.mockk
 import io.mockk.spyk
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -20,12 +23,9 @@ import java.io.IOException
  * @author Raihan Arman
  * @date 30/11/23
  */
-interface CryptoFeedService {
-    suspend fun get(): Flow<HttpClientResult>
-}
 
 class CryptoFeedRetrofitHttpClientTest {
-    private val service = spyk<CryptoFeedService>()
+    private val service = mockk<CryptoFeedService>()
     private lateinit var sut: CryptoFeedRetrofitHttpClient
 
     @Before

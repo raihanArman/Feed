@@ -23,17 +23,6 @@ import java.io.IOException
 interface CryptoFeedService {
     suspend fun get(): Flow<HttpClientResult>
 }
-class CryptoFeedRetrofitHttpClient(
-    private val service: CryptoFeedService
-) {
-    fun get(): Flow<HttpClientResult> = flow {
-        try {
-            service.get() 
-        } catch (e: Exception) {
-            emit(HttpClientResult.Failure(ConnectivityException()))
-        }
-    }
-}
 
 class CryptoFeedRetrofitHttpClientTest {
     private val service = spyk<CryptoFeedService>()

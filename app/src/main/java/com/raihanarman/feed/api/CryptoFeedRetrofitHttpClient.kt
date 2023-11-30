@@ -23,9 +23,13 @@ class CryptoFeedRetrofitHttpClient(
 
                 is HttpException -> {
                     when(e.code()) {
-                         400 -> {
-                             emit(HttpClientResult.Failure(BadRequestException()))
-                         }
+                        400 -> {
+                            emit(HttpClientResult.Failure(BadRequestException()))
+                        }
+                        404 -> {
+                            emit(HttpClientResult.Failure(NotFoundException()))
+                        }
+
                     }
                 }
             }

@@ -6,6 +6,7 @@ import com.raihanarman.feed.api.ConnectivityException
 import com.raihanarman.feed.api.CryptoFeedRetrofitHttpClient
 import com.raihanarman.feed.api.CryptoFeedService
 import com.raihanarman.feed.api.HttpClientResult
+import com.raihanarman.feed.api.NotFoundException
 import com.raihanarman.feed.api.RemoteCryptoFeedItem
 import com.raihanarman.feed.api.RemoteRootCryptoFeed
 import io.mockk.coEvery
@@ -66,6 +67,25 @@ class CryptoFeedRetrofitHttpClientTest {
         sut.get().test {
             val receivedValue = awaitItem() as HttpClientResult.Failure
             assertEquals(BadRequestException()::class.java, receivedValue.exception::class.java)
+            awaitComplete()
+        }
+
+        coVerify(exactly = 1) {
+            service.get()
+        }
+    }
+
+    @Test
+    fun testGetFailsOn404HttpResponse() = runBlocking {
+        val response = Response.error<RemoteRootCryptoFeed>(404, ResponseBody.create(null, ""))
+
+        coEvery {
+            service.get()
+        } throws HttpException(response)
+
+        sut.get().test {
+            val receivedValue = awaitItem() as HttpClientResult.Failure
+            assertEquals(NotFoundException ()::class.java, receivedValue.exception::class.java)
             awaitComplete()
         }
 

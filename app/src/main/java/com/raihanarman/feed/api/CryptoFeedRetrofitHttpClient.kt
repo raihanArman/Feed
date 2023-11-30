@@ -2,6 +2,8 @@ package com.raihanarman.feed.api
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import retrofit2.HttpException
+import java.io.IOException
 
 /**
  * @author Raihan Arman
@@ -14,7 +16,19 @@ class CryptoFeedRetrofitHttpClient(
         try {
             service.get()
         } catch (e: Exception) {
-            emit(HttpClientResult.Failure(ConnectivityException()))
+            when(e) {
+                is IOException -> {
+                    emit(HttpClientResult.Failure(ConnectivityException()))
+                }
+
+                is HttpException -> {
+                    when(e.code()) {
+                         400 -> {
+                             emit(HttpClientResult.Failure(BadRequestException()))
+                         }
+                    }
+                }
+            }
         }
     }
 }

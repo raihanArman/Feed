@@ -173,36 +173,6 @@ class LoadCryptoFeedRemoteUseCaseTest {
 
     @Test
     fun testDeliversItemsOn200HttpResponseWithResponse() = runBlocking {
-        val cryptoFeedResponse = listOf(
-            RemoteCryptoFeedItem(
-                RemoteCoinInfo(
-                    "1",
-                    "BTC",
-                    "Bitcoin",
-                    "imageUrl",
-                ),
-                RemoteDisplay(
-                    RemoteUsd(
-                        1.0,
-                        1F,
-                    ),
-                ),
-            ),
-            RemoteCryptoFeedItem(
-                RemoteCoinInfo(
-                    "2",
-                    "BTC 2",
-                    "Bitcoin 2",
-                    "imageUrl"
-                ),
-                RemoteDisplay(
-                    RemoteUsd(
-                        2.0,
-                        2F,
-                    ),
-                ),
-            ),
-        )
         val cryptoFeed = listOf(
             CryptoFeed(
                 CoinInfo(

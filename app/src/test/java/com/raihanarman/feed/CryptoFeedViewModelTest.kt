@@ -5,12 +5,15 @@ import com.raihanarman.feed.domain.CryptoFeed
 import com.raihanarman.feed.domain.LoadCryptoFeedUseCase
 import io.mockk.MockKAnnotations
 import io.mockk.confirmVerified
+import io.mockk.every
 import io.mockk.spyk
 import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.setMain
 import org.junit.Assert.assertFalse
@@ -34,6 +37,10 @@ class CryptoFeedViewModel(
 ): ViewModel() {
     private val _uiState = MutableStateFlow(UiState())
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
+
+    fun load() {
+        useCase.load()
+    }
 
 }
 class CryptoFeedViewModelTest {
@@ -61,6 +68,21 @@ class CryptoFeedViewModelTest {
     @Test
     fun testInitDoesNotLoad() {
         verify(exactly = 0) {
+            useCase.load()
+        }
+
+        confirmVerified(useCase)
+    }
+
+    @Test
+    fun testLoadRequestsData() = runBlocking {
+        every {
+            useCase.load()
+        } returns flowOf()
+
+        sut.load()
+
+        verify(exactly = 1) {
             useCase.load()
         }
 

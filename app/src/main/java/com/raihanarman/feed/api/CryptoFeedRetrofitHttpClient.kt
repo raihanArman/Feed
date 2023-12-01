@@ -29,7 +29,9 @@ class CryptoFeedRetrofitHttpClient(
                         404 -> {
                             emit(HttpClientResult.Failure(NotFoundException()))
                         }
-
+                        422 -> {
+                            emit(HttpClientResult.Failure(InvalidDataException()))
+                        }
                     }
                 }
             }

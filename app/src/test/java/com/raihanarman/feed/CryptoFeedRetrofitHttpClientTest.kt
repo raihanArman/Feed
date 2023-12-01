@@ -6,6 +6,7 @@ import com.raihanarman.feed.api.ConnectivityException
 import com.raihanarman.feed.api.CryptoFeedRetrofitHttpClient
 import com.raihanarman.feed.api.CryptoFeedService
 import com.raihanarman.feed.api.HttpClientResult
+import com.raihanarman.feed.api.InvalidDataException
 import com.raihanarman.feed.api.NotFoundException
 import com.raihanarman.feed.api.RemoteCryptoFeedItem
 import com.raihanarman.feed.api.RemoteRootCryptoFeed
@@ -62,6 +63,15 @@ class CryptoFeedRetrofitHttpClientTest {
             withStatusCode = 404,
             sut = sut,
             expectedResult = NotFoundException()
+        )
+    }
+
+    @Test
+    fun testGetFailsOn422HttpResponse() {
+        expect(
+            withStatusCode = 422,
+            sut = sut,
+            expectedResult = InvalidDataException()
         )
     }
 

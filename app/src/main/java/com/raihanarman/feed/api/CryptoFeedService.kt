@@ -7,5 +7,5 @@ import kotlinx.coroutines.flow.Flow
  * @date 30/11/23
  */
 interface CryptoFeedService {
-    suspend fun get(): Flow<HttpClientResult>
+    suspend fun get(): RemoteRootCryptoFeed
 }

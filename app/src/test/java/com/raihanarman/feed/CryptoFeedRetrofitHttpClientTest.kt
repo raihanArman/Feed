@@ -11,6 +11,7 @@ import com.raihanarman.feed.api.InvalidDataException
 import com.raihanarman.feed.api.NotFoundException
 import com.raihanarman.feed.api.RemoteCryptoFeedItem
 import com.raihanarman.feed.api.RemoteRootCryptoFeed
+import com.raihanarman.feed.api.UnexpectedException
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
@@ -82,6 +83,14 @@ class CryptoFeedRetrofitHttpClientTest {
             withStatusCode = 500,
             sut = sut,
             expectedResult = InternalServerErrorException()
+        )
+    }
+
+    @Test
+    fun testGetFailsOnUnexpectedException() {
+        expect(
+            sut = sut,
+            expectedResult = UnexpectedException()
         )
     }
 

@@ -79,6 +79,7 @@ class Connectivity: Exception()
 class ConnectivityException: Exception()
 class InvalidDataException: Exception()
 class InternalServerErrorException: Exception()
+class UnexpectedException: Exception()
 class BadRequestException: Exception()
 
 class ServerErrorException: Exception()

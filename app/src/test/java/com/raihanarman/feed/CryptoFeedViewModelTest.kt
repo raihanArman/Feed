@@ -4,7 +4,9 @@ import androidx.lifecycle.ViewModel
 import com.raihanarman.feed.domain.CryptoFeed
 import com.raihanarman.feed.domain.LoadCryptoFeedUseCase
 import io.mockk.MockKAnnotations
+import io.mockk.confirmVerified
 import io.mockk.spyk
+import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -54,5 +56,14 @@ class CryptoFeedViewModelTest {
         assertFalse(uiState.isLoading)
         assertTrue(uiState.cryptoFeed.isEmpty())
         assert(uiState.failed.isEmpty())
+    }
+
+    @Test
+    fun testInitDoesNotLoad() {
+        verify(exactly = 0) {
+            useCase.load()
+        }
+
+        confirmVerified(useCase)
     }
 }

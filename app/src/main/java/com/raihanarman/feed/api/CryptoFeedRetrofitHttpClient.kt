@@ -14,24 +14,27 @@ class CryptoFeedRetrofitHttpClient(
 ) {
     fun get(): Flow<HttpClientResult> = flow {
         try {
-            service.get()
-        } catch (e: Exception) {
-            when(e) {
+            emit(HttpClientResult.Success(service.get()))
+        } catch (exception: Exception) {
+            when (exception) {
                 is IOException -> {
                     emit(HttpClientResult.Failure(ConnectivityException()))
                 }
 
                 is HttpException -> {
-                    when(e.code()) {
+                    when (exception.code()) {
                         400 -> {
                             emit(HttpClientResult.Failure(BadRequestException()))
                         }
+
                         404 -> {
                             emit(HttpClientResult.Failure(NotFoundException()))
                         }
+
                         422 -> {
                             emit(HttpClientResult.Failure(InvalidDataException()))
                         }
+
                         500 -> {
                             emit(HttpClientResult.Failure(InternalServerErrorException()))
                         }
@@ -40,8 +43,8 @@ class CryptoFeedRetrofitHttpClient(
                 else -> {
                     emit(HttpClientResult.Failure(UnexpectedException()))
                 }
-
             }
         }
     }
+
 }

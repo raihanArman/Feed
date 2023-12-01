@@ -27,6 +27,7 @@ import org.junit.Test
 import retrofit2.HttpException
 import retrofit2.Response
 import java.io.IOException
+import kotlin.math.exp
 
 /**
  * @author Raihan Arman
@@ -94,10 +95,22 @@ class CryptoFeedRetrofitHttpClientTest {
         )
     }
 
+    @Test
+    fun testGetSuccessOn200HttpResponseWithResponse() {
+        expect(
+            sut = sut,
+            receivedResult = RemoteRootCryptoFeed(cryptoFeedResponse),
+            expectedResult = HttpClientResult.Success(
+                RemoteRootCryptoFeed(cryptoFeedResponse)
+            )
+        )
+    }
+
     private fun expect(
         withStatusCode: Int? = null,
         sut: CryptoFeedRetrofitHttpClient,
         expectedResult: Any,
+        receivedResult: Any? = null,
     ) = runBlocking {
         when {
             withStatusCode != null -> {
@@ -114,6 +127,12 @@ class CryptoFeedRetrofitHttpClientTest {
                 } throws  IOException()
             }
 
+            expectedResult is HttpClientResult.Success -> {
+                coEvery {
+                    service.get()
+                } returns receivedResult as RemoteRootCryptoFeed
+            }
+
             else -> {
                 coEvery {
                     service.get()
@@ -122,8 +141,18 @@ class CryptoFeedRetrofitHttpClientTest {
         }
 
         sut.get().test {
-            val receivedValue = awaitItem() as HttpClientResult.Failure
-            assertEquals(expectedResult::class.java, receivedValue.exception::class.java)
+            when(val receivedValue = awaitItem()) {
+                is HttpClientResult.Failure -> {
+                    assertEquals(expectedResult::class.java, receivedValue.exception::class.java)
+                }
+                is HttpClientResult.Success -> {
+                    assertEquals(
+                        (expectedResult as HttpClientResult.Success).root,
+                        receivedResult
+                    )
+                }
+            }
+
             awaitComplete()
         }
 

@@ -1,6 +1,7 @@
 package com.raihanarman.feed
 
 import androidx.lifecycle.ViewModel
+import app.cash.turbine.test
 import com.raihanarman.feed.domain.CryptoFeed
 import com.raihanarman.feed.domain.LoadCryptoFeedUseCase
 import io.mockk.MockKAnnotations
@@ -13,9 +14,12 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.take
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.setMain
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -39,6 +43,11 @@ class CryptoFeedViewModel(
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
 
     fun load() {
+        _uiState.update {
+            it.copy(
+                isLoading = true
+            )
+        }
         useCase.load()
     }
 
@@ -99,6 +108,27 @@ class CryptoFeedViewModelTest {
         sut.load()
 
         verify(exactly = 2) {
+            useCase.load()
+        }
+
+        confirmVerified(useCase)
+    }
+
+    @Test
+    fun testLoadIsLoadingState() = runBlocking {
+        every {
+            useCase.load()
+        } returns flowOf()
+
+        sut.load()
+
+         sut.uiState.take(1).test {
+            val receivedResult = awaitItem()
+            assertEquals(true, receivedResult.isLoading)
+            awaitComplete()
+        }
+
+        verify(exactly = 1) {
             useCase.load()
         }
 

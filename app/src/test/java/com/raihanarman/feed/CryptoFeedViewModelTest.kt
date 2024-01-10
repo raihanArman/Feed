@@ -6,6 +6,7 @@ import app.cash.turbine.test
 import com.raihanarman.feed.api.BadRequest
 import com.raihanarman.feed.api.Connectivity
 import com.raihanarman.feed.api.InvalidData
+import com.raihanarman.feed.api.NotFound
 import com.raihanarman.feed.domain.CryptoFeed
 import com.raihanarman.feed.domain.LoadCryptoFeedResult
 import com.raihanarman.feed.domain.LoadCryptoFeedUseCase
@@ -67,6 +68,7 @@ class CryptoFeedViewModel(
                                     is Connectivity -> "Tidak ada internet"
                                     is InvalidData -> "Terjadi kesalahan"
                                     is BadRequest -> "Permintaan gagal"
+                                    is NotFound -> "Tidak ditemukan"
                                     else -> {
                                         ""
                                     }
@@ -190,6 +192,16 @@ class CryptoFeedViewModelTest {
             sut = sut,
             expectedLoadingResult = false,
             "Permintaan gagal"
+        )
+    }
+
+    @Test
+    fun testLoadFailedNotFoundErrorShowsError() = runBlocking {
+        expect(
+            result = LoadCryptoFeedResult.Failure(NotFound()),
+            sut = sut,
+            expectedLoadingResult = false,
+            "Tidak ditemukan"
         )
     }
 

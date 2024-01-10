@@ -61,13 +61,14 @@ class CryptoFeedViewModel(
                         is LoadCryptoFeedResult.Success -> TODO()
                         is LoadCryptoFeedResult.Failure -> {
                             it.copy(
+                                isLoading = false,
                                 failed = when(result.exception) {
                                     is Connectivity -> "Tidak ada internet"
                                     is InvalidData -> "Terjadi kesalahan"
                                     else -> {
                                         ""
                                     }
-                                }
+                                },
                             )
                         }
                     }
@@ -162,36 +163,41 @@ class CryptoFeedViewModelTest {
 
     @Test
     fun testLoadFailedConnectivityShowsConnectivityError() = runBlocking {
-        every {
-            useCase.load()
-        } returns flowOf(LoadCryptoFeedResult.Failure(Connectivity()))
-
-        sut.load()
-
-        sut.uiState.take(1).test {
-            val receivedResult = awaitItem()
-            assertEquals("Tidak ada internet", receivedResult.failed)
-            awaitComplete()
-        }
-
-        verify(exactly = 1) {
-            useCase.load()
-        }
-
-        confirmVerified(useCase)
+        expect(
+            result = LoadCryptoFeedResult.Failure(Connectivity()),
+            sut = sut,
+            expectedLoadingResult = false,
+            "Tidak ada internet"
+        )
     }
 
     @Test
     fun testLoadFailedInvalidDataErrorShowsError() = runBlocking {
+        expect(
+            result = LoadCryptoFeedResult.Failure(InvalidData()),
+            sut = sut,
+            expectedLoadingResult = false,
+            "Terjadi kesalahan"
+        )
+    }
+
+
+    private fun expect(
+        result: LoadCryptoFeedResult,
+        sut: CryptoFeedViewModel,
+        expectedLoadingResult: Boolean,
+        expectedFailedResult: String,
+    ) = runBlocking  {
         every {
             useCase.load()
-        } returns flowOf(LoadCryptoFeedResult.Failure(InvalidData()))
+        } returns flowOf(result)
 
         sut.load()
 
         sut.uiState.take(1).test {
             val receivedResult = awaitItem()
-            assertEquals("Terjadi kesalahan", receivedResult.failed)
+            assertEquals(expectedLoadingResult, receivedResult.isLoading)
+            assertEquals(expectedFailedResult, receivedResult.failed)
             awaitComplete()
         }
 

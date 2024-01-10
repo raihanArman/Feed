@@ -3,6 +3,7 @@ package com.raihanarman.feed
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.cash.turbine.test
+import com.raihanarman.feed.api.BadRequest
 import com.raihanarman.feed.api.Connectivity
 import com.raihanarman.feed.api.InvalidData
 import com.raihanarman.feed.domain.CryptoFeed
@@ -65,6 +66,7 @@ class CryptoFeedViewModel(
                                 failed = when(result.exception) {
                                     is Connectivity -> "Tidak ada internet"
                                     is InvalidData -> "Terjadi kesalahan"
+                                    is BadRequest -> "Permintaan gagal"
                                     else -> {
                                         ""
                                     }
@@ -178,6 +180,16 @@ class CryptoFeedViewModelTest {
             sut = sut,
             expectedLoadingResult = false,
             "Terjadi kesalahan"
+        )
+    }
+
+    @Test
+    fun testLoadFailedBadRequestErrorShowsError() = runBlocking {
+        expect(
+            result = LoadCryptoFeedResult.Failure(BadRequest ()),
+            sut = sut,
+            expectedLoadingResult = false,
+            "Permintaan gagal"
         )
     }
 

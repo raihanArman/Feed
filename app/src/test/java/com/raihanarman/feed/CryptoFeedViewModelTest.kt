@@ -187,7 +187,7 @@ class CryptoFeedViewModelTest {
 
         sut.uiState.take(1).test {
             val receiverResult = awaitItem()
-            if (receiverResult.failed.isEmpty()) {
+            if (receiverResult.cryptoFeed.isNotEmpty()) {
                 assertEquals(expectedLoadingResult, receiverResult.isLoading)
                 assertEquals(cryptoFeed, receiverResult.cryptoFeed)
                 assertEquals(expectedFailedResult, receiverResult.failed)

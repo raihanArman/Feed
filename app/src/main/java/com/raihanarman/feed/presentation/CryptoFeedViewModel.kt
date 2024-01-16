@@ -41,7 +41,12 @@ class CryptoFeedViewModel(
             useCase.load().collect { result ->
                 _uiState.update {
                     when(result) {
-                        is LoadCryptoFeedResult.Success -> TODO()
+                        is LoadCryptoFeedResult.Success -> {
+                            it.copy(
+                                isLoading = false,
+                                cryptoFeed = result.cryptoFeedItems
+                            )
+                        }
                         is LoadCryptoFeedResult.Failure -> {
                             it.copy(
                                 isLoading = false,

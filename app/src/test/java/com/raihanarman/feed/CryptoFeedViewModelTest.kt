@@ -10,6 +10,7 @@ import com.raihanarman.feed.api.NotFound
 import com.raihanarman.feed.domain.CryptoFeed
 import com.raihanarman.feed.domain.LoadCryptoFeedResult
 import com.raihanarman.feed.domain.LoadCryptoFeedUseCase
+import com.raihanarman.feed.presentation.CryptoFeedViewModel
 import io.mockk.MockKAnnotations
 import io.mockk.confirmVerified
 import io.mockk.every
@@ -38,50 +39,6 @@ import org.junit.Test
  * @date 01/12/23
  */
 
-data class UiState(
-    val isLoading: Boolean = false,
-    val cryptoFeed: List<CryptoFeed> = emptyList(),
-    val failed: String = ""
-)
-
-class CryptoFeedViewModel(
-    private val useCase: LoadCryptoFeedUseCase
-): ViewModel() {
-    private val _uiState = MutableStateFlow(UiState())
-    val uiState: StateFlow<UiState> = _uiState.asStateFlow()
-
-    fun load() {
-        viewModelScope.launch {
-            _uiState.update {
-                it.copy(
-                    isLoading = true
-                )
-            }
-            useCase.load().collect { result ->
-                _uiState.update {
-                    when(result) {
-                        is LoadCryptoFeedResult.Success -> TODO()
-                        is LoadCryptoFeedResult.Failure -> {
-                            it.copy(
-                                isLoading = false,
-                                failed = when(result.exception) {
-                                    is Connectivity -> "Tidak ada internet"
-                                    is InvalidData -> "Terjadi kesalahan"
-                                    is BadRequest -> "Permintaan gagal"
-                                    is NotFound -> "Tidak ditemukan"
-                                    else -> {
-                                        ""
-                                    }
-                                },
-                            )
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-}
 class CryptoFeedViewModelTest {
     private val useCase = spyk<LoadCryptoFeedUseCase>()
     private lateinit var sut: CryptoFeedViewModel
